@@ -24,21 +24,26 @@ wheels/
 venv/
 ENV/
 env/
+.env
 
-# IDEs
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# OS
+# Database
+*.db
+instance/
+
+# Logs
+*.log
+
+# Local development
 .DS_Store
 Thumbs.db
-desktop.ini
 
 # Application specific
-instance/
-*.db
 *.sqlite3
 *.docx
 *.pdf
@@ -49,12 +54,6 @@ instance/
 *.cv.*
 resumes/
 uploads/
-
-# Environment variables
-.env
-
-# Logs
-*.log
 
 # Temporary files
 *.tmp

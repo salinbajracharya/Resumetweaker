@@ -14,27 +14,35 @@ import json
 from sentence_transformers import SentenceTransformer, util
 from transformers import pipeline
 import torch
+import logging
+import sys
 
 # Load environment variables
 load_dotenv()
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    stream=sys.stdout
+)
+logger = logging.getLogger(__name__)
+
 # Initialize Flask app
 app = Flask(__name__)
 
-# Initialize models (load only once at startup)
-@app.before_first_request
-def load_models():
-    global sentence_model, keyword_extractor
-    # Load sentence transformer model for similarity
-    sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-    # Load keyword extraction model
-    keyword_extractor = pipeline("token-classification", 
-                               model="yanekyuk/bert-uncased-keyword-extractor")
+# Initialize models as None
+sentence_model = None
+keyword_extractor = None
 
-# Add JSON template filter
-@app.template_filter('from_json')
-def from_json(value):
-    return json.loads(value)
+def init_app(app):
+    # Initialize extensions
+    db.init_app(app)
+    login_manager.init_app(app)
+    
+    with app.app_context():
+        # Create database tables
+        db.create_all()
 
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
@@ -44,12 +52,60 @@ if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
-# Initialize extensions
-db = SQLAlchemy(app)
-login_manager = LoginManager(app)
-login_manager.login_view = 'login'
-login_manager.login_message = 'Please log in to access this page.'
-login_manager.login_message_category = 'info'
+# Initialize the app
+init_app(app)
+
+def load_models():
+    global sentence_model, keyword_extractor
+    try:
+        if sentence_model is None:
+            logger.info("Loading sentence transformer model...")
+            sentence_model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+            logger.info("Sentence transformer model loaded successfully")
+        if keyword_extractor is None:
+            logger.info("Loading keyword extractor model...")
+            keyword_extractor = pipeline("token-classification", 
+                                      model="yanekyuk/bert-uncased-keyword-extractor")
+            logger.info("Keyword extractor model loaded successfully")
+    except Exception as e:
+        logger.error(f"Error loading models: {str(e)}")
+        raise
+
+@app.before_request
+def before_request():
+    if request.endpoint == 'upload':
+        try:
+            load_models()
+        except Exception as e:
+            logger.error(f"Error in before_request: {str(e)}")
+            return "Server is initializing, please try again in a few minutes", 503
+
+# Add startup check route
+@app.route('/health')
+def health_check():
+    try:
+        # Check database connection
+        db.session.execute('SELECT 1')
+        return jsonify({"status": "healthy", "database": "connected"}), 200
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
+
+# Error handlers
+@app.errorhandler(500)
+def internal_error(error):
+    logger.error(f"Internal Server Error: {error}")
+    return "Internal Server Error", 500
+
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.error(f"Unhandled exception: {str(e)}")
+    return "Internal Server Error", 500
+
+# Add JSON template filter
+@app.template_filter('from_json')
+def from_json(value):
+    return json.loads(value)
 
 # User model
 class User(UserMixin, db.Model):
@@ -488,9 +544,6 @@ def upload():
 def utility_processor():
     return {'now': datetime.utcnow()}
 
-# Create database tables
-with app.app_context():
-    db.create_all()
-
 if __name__ == '__main__':
-    app.run(debug=True) 
+    port = int(os.environ.get('PORT', 10000))
+    app.run(host='0.0.0.0', port=port, debug=False) 

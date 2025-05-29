@@ -2,8 +2,12 @@ services:
   - type: web
     name: itsutra-resume-tweaker
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    buildCommand: |
+      pip install -r requirements.txt
+      chmod +x start.sh
+    startCommand: ./start.sh
+    healthCheckPath: /health
+    healthCheckTimeout: 120
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
@@ -17,9 +21,12 @@ services:
         fromDatabase:
           name: resume-tweaker-db
           property: connectionString
-    initialDeployHooks:
-      - pip install -r requirements.txt
-      - python create_db.py
+      - key: TRANSFORMERS_CACHE
+        value: /tmp/transformers_cache
+      - key: TORCH_HOME
+        value: /tmp/torch_cache
+      - key: PORT
+        value: "10000"
 
 databases:
   - name: resume-tweaker-db
