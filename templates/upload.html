@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Resume - ITSutra Resume Tweaker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">
+                        <i class="fas fa-file-upload text-primary me-2"></i>
+                        Upload Resume
+                    </h2>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <!-- Resume Upload -->
+                        <div class="mb-4">
+                            <label for="resume" class="form-label">Your Resume</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-file-alt"></i>
+                                </span>
+                                <input type="file" class="form-control" id="resume" name="resume" accept=".docx,.doc,.txt,.pdf" required>
+                            </div>
+                            <div class="form-text">Supported formats: .docx, .doc, .txt, .pdf</div>
+                        </div>
+
+                        <!-- Job Title -->
+                        <div class="mb-4">
+                            <label for="job_title" class="form-label">Job Title</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-briefcase"></i>
+                                </span>
+                                <input type="text" class="form-control" id="job_title" name="job_title" placeholder="e.g. Senior Software Engineer" required>
+                            </div>
+                        </div>
+
+                        <!-- Job Description Input Type Selection -->
+                        <div class="mb-4">
+                            <label class="form-label d-block">Job Description</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="jd_input_type" id="jd_text_radio" value="text" checked>
+                                <label class="btn btn-outline-primary" for="jd_text_radio">
+                                    <i class="fas fa-keyboard me-2"></i>Paste Text
+                                </label>
+
+                                <input type="radio" class="btn-check" name="jd_input_type" id="jd_file_radio" value="file">
+                                <label class="btn btn-outline-primary" for="jd_file_radio">
+                                    <i class="fas fa-file-upload me-2"></i>Upload File
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Job Description Text Area -->
+                        <div id="jd_text_input" class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-briefcase"></i>
+                                </span>
+                                <textarea class="form-control" id="jd_text" name="jd_text" rows="6" placeholder="Paste the job description here..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Job Description File Upload -->
+                        <div id="jd_file_input" class="mb-4" style="display: none;">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-file-alt"></i>
+                                </span>
+                                <input type="file" class="form-control" id="jd_file" name="jd_file" accept=".docx,.doc,.txt,.pdf">
+                            </div>
+                            <div class="form-text">Supported formats: .docx, .doc, .txt, .pdf</div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-magic me-2"></i>Analyze Resume
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const jdTextRadio = document.getElementById('jd_text_radio');
+    const jdFileRadio = document.getElementById('jd_file_radio');
+    const jdTextInput = document.getElementById('jd_text_input');
+    const jdFileInput = document.getElementById('jd_file_input');
+    const jdTextArea = document.getElementById('jd_text');
+    const jdFileField = document.getElementById('jd_file');
+
+    function updateInputVisibility() {
+        if (jdTextRadio.checked) {
+            jdTextInput.style.display = 'block';
+            jdFileInput.style.display = 'none';
+            jdFileField.value = '';
+            jdTextArea.setAttribute('required', '');
+            jdFileField.removeAttribute('required');
+        } else {
+            jdTextInput.style.display = 'none';
+            jdFileInput.style.display = 'block';
+            jdTextArea.value = '';
+            jdFileField.setAttribute('required', '');
+            jdTextArea.removeAttribute('required');
+        }
+    }
+
+    jdTextRadio.addEventListener('change', updateInputVisibility);
+    jdFileRadio.addEventListener('change', updateInputVisibility);
+
+    // Initial setup
+    updateInputVisibility();
+});
+</script>
+{% endblock %} 

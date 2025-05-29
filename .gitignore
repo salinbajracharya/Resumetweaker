@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+ENV/
+env/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Application specific
+instance/
+*.db
+*.sqlite3
+*.docx
+*.pdf
+*.lnk
+
+# Personal files
+*.resume.*
+*.cv.*
+resumes/
+uploads/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*~
+
+# Model files
+*.pt
+*.pth
+*.bin
+
+# Resume files (sensitive data)
+*.txt
+!requirements.txt
+!runtime.txt
+!README.md 

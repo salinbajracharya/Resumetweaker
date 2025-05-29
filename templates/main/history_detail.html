@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Details - ITSutra Resume Tweaker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('history') }}">History</a></li>
+                    <li class="breadcrumb-item active">Analysis Details</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-file-alt me-2"></i>{{ entry.job_title }}
+                    </h3>
+                    <small>Analyzed on {{ entry.created_at.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                </div>
+                <div class="card-body">
+                    {% set analysis = entry.analysis_result|from_json %}
+                    
+                    <!-- Match Score -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">Match Score</h4>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar {% if entry.match_score < 0.4 %}bg-danger{% elif entry.match_score < 0.7 %}bg-warning{% else %}bg-success{% endif %}"
+                                 role="progressbar"
+                                 style="width: {{ (entry.match_score * 100)|round|int }}%">
+                                {{ (entry.match_score * 100)|round|int }}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Domain Compatibility -->
+                    <div class="mb-4">
+                        <h4 class="mb-3">Domain Compatibility</h4>
+                        <div class="alert {% if entry.domain_compatibility == 'compatible' %}alert-success{% elif entry.domain_compatibility == 'partial' %}alert-warning{% elif entry.domain_compatibility == 'incompatible' %}alert-danger{% else %}alert-secondary{% endif %}">
+                            <i class="fas {% if entry.domain_compatibility == 'compatible' %}fa-check-circle{% elif entry.domain_compatibility == 'partial' %}fa-exclamation-triangle{% elif entry.domain_compatibility == 'incompatible' %}fa-times-circle{% else %}fa-info-circle{% endif %} me-2"></i>
+                            {{ analysis.domain_message }}
+                        </div>
+                        {% if analysis.job_domains %}
+                            <div class="mt-3">
+                                <strong>Required Domains:</strong>
+                                {% for domain in analysis.job_domains %}
+                                    <span class="badge bg-primary me-2">{{ domain|title }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if analysis.resume_domains %}
+                            <div class="mt-2">
+                                <strong>Your Experience:</strong>
+                                {% for domain in analysis.resume_domains %}
+                                    <span class="badge bg-secondary me-2">{{ domain|title }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-key me-2"></i>Important Keywords
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if analysis.keywords %}
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for keyword in analysis.keywords %}
+                                                <span class="badge bg-primary">{{ keyword }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-muted mb-0">No keywords extracted</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-exclamation-circle me-2"></i>Missing Keywords
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    {% if analysis.missing_keywords %}
+                                        <div class="d-flex flex-wrap gap-2">
+                                            {% for keyword in analysis.missing_keywords %}
+                                                <span class="badge bg-warning text-dark">{{ keyword }}</span>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="mt-3">
+                                            <small class="text-muted">
+                                                Consider adding these keywords to your resume where relevant to your experience.
+                                            </small>
+                                        </div>
+                                    {% else %}
+                                        <p class="text-success mb-0">
+                                            <i class="fas fa-check-circle me-2"></i>Your resume includes all important keywords!
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Original Content -->
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-file-alt me-2"></i>Resume Content
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="border rounded p-3 bg-light" style="max-height: 300px; overflow-y: auto;"><code>{{ entry.resume_text }}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-briefcase me-2"></i>Job Description
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="border rounded p-3 bg-light" style="max-height: 300px; overflow-y: auto;"><code>{{ entry.job_description }}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="text-center">
+                <a href="{{ url_for('history') }}" class="btn btn-secondary me-2">
+                    <i class="fas fa-arrow-left me-2"></i>Back to History
+                </a>
+                <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                    <i class="fas fa-upload me-2"></i>Upload New Resume
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: itsutra-resume-tweaker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: FLASK_APP
+        value: app.py
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: resume-tweaker-db
+          property: connectionString
+    initialDeployHooks:
+      - pip install -r requirements.txt
+      - python create_db.py
+
+databases:
+  - name: resume-tweaker-db
+    databaseName: resumetweaker
+    user: resumetweaker
+    plan: free
+
+# Optional: Add HTTPS redirect
+routes:
+  - type: redirect
+    source: /
+    destination: https://itsutra-resume-tweaker.onrender.com
+    permanent: true 

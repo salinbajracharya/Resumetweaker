@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - ITSutra Resume Tweaker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <div class="display-1 text-primary mb-3">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h2 class="text-secondary">{{ current_user.full_name }}</h2>
+                        <p class="text-muted">{{ current_user.email }}</p>
+                    </div>
+
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-info-circle text-primary me-2"></i>
+                                        Account Information
+                                    </h5>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <strong>Member since:</strong><br>
+                                            {{ current_user.created_at.strftime('%B %d, %Y') }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <strong>Last login:</strong><br>
+                                            {% if current_user.last_login %}
+                                                {{ current_user.last_login.strftime('%B %d, %Y at %I:%M %p') }}
+                                            {% else %}
+                                                Never
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="fas fa-cog text-primary me-2"></i>
+                                        Account Settings
+                                    </h5>
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-primary" disabled>
+                                            <i class="fas fa-key me-2"></i>
+                                            Change Password
+                                        </button>
+                                        <button class="btn btn-outline-primary" disabled>
+                                            <i class="fas fa-bell me-2"></i>
+                                            Notification Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

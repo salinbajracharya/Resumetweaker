@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ITSutra Resume Tweaker{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Welcome to ITSutra Resume Tweaker</h1>
+    
+    <div class="row g-4">
+        <!-- Upload Resume Card -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-file-upload text-primary me-2"></i>
+                        Upload Resume
+                    </h5>
+                    <p class="card-text">Upload your resume and job description to get personalized optimization suggestions.</p>
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right me-2"></i>
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-user-circle text-primary me-2"></i>
+                        Your Profile
+                    </h5>
+                    <p class="card-text">View and manage your profile settings and preferences.</p>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-cog me-2"></i>
+                        Manage Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
