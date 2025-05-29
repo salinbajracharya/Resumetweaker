@@ -3,6 +3,8 @@ services:
     name: itsutra-resume-tweaker
     env: docker
     dockerfilePath: ./Dockerfile
+    branch: master
+    commit: cb275ef5acc4a790a1b64f467be7d2e7a93c1437
     healthCheckPath: /health
     healthCheckTimeout: 120
     envVars:
