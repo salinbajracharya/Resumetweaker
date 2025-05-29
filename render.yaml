@@ -1,16 +1,11 @@
 services:
   - type: web
     name: itsutra-resume-tweaker
-    env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      chmod +x start.sh
-    startCommand: ./start.sh
+    env: docker
+    dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     healthCheckTimeout: 120
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: FLASK_APP
         value: app.py
       - key: FLASK_ENV
