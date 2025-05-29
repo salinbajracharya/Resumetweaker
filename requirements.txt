@@ -15,12 +15,11 @@ transformers==4.38.1
 torch==2.2.0+cpu
 torchvision==0.17.0+cpu
 torchaudio==2.2.0+cpu
---no-deps sentence-transformers==2.5.1
+sentence-transformers==2.5.1
 psycopg2-binary==2.9.9
 gunicorn==21.2.0
 Flask-Migrate==4.0.5
 alembic==1.13.1
-# Additional dependencies for sentence-transformers
 nltk>=3.6.0
 scikit-learn>=0.24.1
 scipy>=1.4.1
