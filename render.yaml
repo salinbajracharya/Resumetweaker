@@ -22,6 +22,10 @@ services:
         value: /tmp/transformers_cache
       - key: TORCH_HOME
         value: /tmp/torch_cache
+      - key: CUDA_VISIBLE_DEVICES
+        value: ""
+      - key: FORCE_CPU
+        value: "1"
       - key: PORT
         value: "10000"
 
