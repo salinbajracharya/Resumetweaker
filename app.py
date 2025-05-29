@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_file, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate 
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 db = SQLAlchemy()
 login_manager = LoginManager()
+migrate = Migrate()
 
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime, timedelta
@@ -39,13 +41,9 @@ sentence_model = None
 keyword_extractor = None
 
 def init_app(app):
-    # Initialize extensions
     db.init_app(app)
     login_manager.init_app(app)
-    
-    with app.app_context():
-        # Create database tables
-        db.create_all()
+    migrate.init_app(app, db) 
 
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-here')
